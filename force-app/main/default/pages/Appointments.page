@@ -3,12 +3,12 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title> Appointments </title>
-        <apex:slds/>
+        <apex:slds />
     </head>
     <body>
     <apex:pageBlock title=" Appointments Table">
 
-        <apex:form>
+        <apex:form >
             <span>Select a Doctor: </span>
             <apex:selectList size="1" value="{!selectedDoctorId}" multiselect="false">
                 <apex:selectOptions value="{!doctorOptionList}"></apex:selectOptions>
@@ -27,7 +27,7 @@
             </apex:outputText>
 
         </apex:pageBlockSection>
-        <apex:form>
+        <apex:form >
             <span>Select a Patient: </span>
             <apex:selectList size="1" value="{!selectedPatientId}" multiselect="false">
                 <apex:selectOptions value="{!patientOptionList}"></apex:selectOptions>
@@ -43,7 +43,7 @@
         <button onclick="document.location='https://vrpconsulting-f1-dev-ed.lightning.force.com/lightning/o/Patient__c/new'">
             Add new Patient
         </button>
-        <apex:form>
+        <apex:form >
             <apex:pageBlockSection columns="1">
                 <apex:inputField value="{!newAppointment.Appointment_Date__c}"/>
                 <apex:inputField value="{!newAppointment.Duration_in_minutes__c}"/>
@@ -52,7 +52,7 @@
             </apex:pageBlockSection>
         </apex:form>
     </apex:pageBlock>
-    <apex:pageBlock>
+    <apex:pageBlock >
         <apex:form id="selected_doctorAppointments">
             <apex:pageBlockTable value="{!DoctorAppointmentsList}" var="appointment">
                 <apex:column headerValue="Action">
@@ -71,7 +71,7 @@
             <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Previous"
                                 action="{!setCon.previous}" title="Previous Page"/>
 
-            <apex:outputText>{!setCon.pageNumber}/{!CEILING(countOfRecords/size)}</apex:outputText>
+            <apex:outputText >{!setCon.pageNumber}/{!CEILING(countOfRecords/size)}</apex:outputText>
 
 
             <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Next"
