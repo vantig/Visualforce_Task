@@ -5,6 +5,16 @@ public class AppointmentsController {
     private List<Appointment__c>appointmentList = new List<Appointment__c>();
     public Doctors__c selectedDoctor { get; set; }
     public Patient__c selectedPatient { get; set; }
+    public Appointment__c newAppointment {
+        get {
+            if (newAppointment == null) {
+                newAppointment= new Appointment__c();
+                return newAppointment;
+            }
+            return newAppointment;
+        }
+        set;
+    }
     public String selectedPatientId {
         get;
         set {
@@ -18,6 +28,14 @@ public class AppointmentsController {
             selectedDoctorId = value;
             updateDoctor();
         }
+    }
+    public AppointmentsController() {
+
+        patientList = [SELECT Id,Name FROM Patient__c ORDER BY Name ASC];
+        doctorList = [SELECT Id,Name,Working_Hours_Start__c,Working_Hours_End__c FROM Doctors__c ORDER BY Name ASC];
+        appointmentList = [SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c];
+        selectedDoctorId = null;
+        selectedPatientId = null;
     }
     private void updateDoctor() {
         selectedDoctor = null;
@@ -43,15 +61,14 @@ public class AppointmentsController {
         }
 
     }
-
-    public AppointmentsController() {
-
-        patientList = [SELECT Id,Name FROM Patient__c ORDER BY Name ASC];
-        doctorList = [SELECT Id,Name,Working_Hours_Start__c,Working_Hours_End__c FROM Doctors__c ORDER BY Name ASC];
-        appointmentList = [SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c];
-        selectedDoctorId = null;
-        selectedPatientId = null;
+    public Datetime getWorkingHoursStart() {
+        return (selectedDoctor != null && selectedDoctor.Working_Hours_Start__c != null) ? Datetime.newInstanceGmt(System.today(), selectedDoctor.Working_Hours_Start__c) : null;
     }
+
+    public Datetime getWorkingHoursEnd() {
+        return (selectedDoctor != null && selectedDoctor.Working_Hours_End__c != null) ? Datetime.newInstanceGmt(System.today(), selectedDoctor.Working_Hours_End__c) : null;
+    }
+
 
 
     public List<SelectOption> getDoctorOptionList() {
@@ -78,13 +95,7 @@ public class AppointmentsController {
         return patientOptionList;
     }
 
-    public Datetime getWorkingHoursStart() {
-        return (selectedDoctor != null && selectedDoctor.Working_Hours_Start__c != null) ? Datetime.newInstanceGmt(System.today(), selectedDoctor.Working_Hours_Start__c) : null;
-    }
 
-    public Datetime getWorkingHoursEnd() {
-        return (selectedDoctor != null && selectedDoctor.Working_Hours_End__c != null) ? Datetime.newInstanceGmt(System.today(), selectedDoctor.Working_Hours_End__c) : null;
-    }
      List<Appointment__c> getAppointments() {
         List<Appointment__c> appointments = new List<Appointment__c>();
         if (selectedPatient == null && selectedDoctor == null) {
@@ -105,22 +116,6 @@ public class AppointmentsController {
 
     } set; }
 
-//    String getQuery(){
-//        String query = 'SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c';
-//        if (selectedDoctor.Id!=null||selectedPatient.Id!=null) {
-//            query+=' WHERE ';
-//            //[SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c WHERE Doctor__c = :selectedDoctorId])
-//            if (selectedDoctor!=null) {
-//                query+='Doctor__c = :selectedDoctorId ';
-//
-//            }
-//            if (selectedPatient!=null) {
-//                query+='Patient__c = :selectedPatientId ';
-//            }
-//        }
-//
-//        return query;
-//    }
 
     public Integer sizeOfPage { get {return 5;} set; }
     public Integer countOfRecords { get; set; }
@@ -141,16 +136,7 @@ public class AppointmentsController {
         }
         set;
     }
-    public Appointment__c newAppointment {
-        get {
-            if (newAppointment == null) {
-                newAppointment= new Appointment__c();
-                return newAppointment;
-            }
-            return newAppointment;
-        }
-        set;
-    }
+
     public void saveAppointment() {
 
         if (selectedDoctor == null) {
