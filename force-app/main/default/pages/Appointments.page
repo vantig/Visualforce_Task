@@ -1,4 +1,5 @@
 <apex:page lightningStylesheets="true" language="en-US" controller="AppointmentsController" docType="html-5.0">
+
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -6,7 +7,8 @@
         <apex:slds />
     </head>
     <body>
-    <apex:pageBlock title=" Appointments Table">
+    <apex:messages />
+    <apex:pageBlock title="Appointments Table">
 
         <apex:form >
             <span>Select a Doctor: </span>
@@ -31,7 +33,7 @@
             <span>Select a Patient: </span>
             <apex:selectList size="1" value="{!selectedPatientId}" multiselect="false">
                 <apex:selectOptions value="{!patientOptionList}"></apex:selectOptions>
-                <apex:actionSupport reRender="none" event="onchange"></apex:actionSupport>
+                <apex:actionSupport reRender="selected_doctorAppointments" event="onchange"></apex:actionSupport>
             </apex:selectList>
         </apex:form>
         <br/>
@@ -51,10 +53,8 @@
                 <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>
             </apex:pageBlockSection>
         </apex:form>
-    </apex:pageBlock>
-    <apex:pageBlock >
         <apex:form id="selected_doctorAppointments">
-            <apex:pageBlockTable value="{!DoctorAppointmentsList}" var="appointment">
+            <apex:pageBlockTable value="{!appointments}" var="appointment">
                 <apex:column headerValue="Action">
                     <apex:outputLink value="{! URLFOR($Action.Appointment__c.View, appointment.Id) }">
                         View
@@ -71,7 +71,7 @@
             <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Previous"
                                 action="{!setCon.previous}" title="Previous Page"/>
 
-            <apex:outputText >{!setCon.pageNumber}/{!CEILING(countOfRecords/size)}</apex:outputText>
+            <apex:outputText >{!setCon.pageNumber}/{!CEILING(countOfRecords/sizeOfPage)}</apex:outputText>
 
 
             <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Next"
