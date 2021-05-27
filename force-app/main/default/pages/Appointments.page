@@ -10,31 +10,39 @@
     <apex:messages/>
     <apex:pageBlock title="Appointments Table">
 
+
         <apex:form>
             <apex:selectList size="1" value="{!selectedDoctorId}" multiselect="false">
                 <apex:selectOptions value="{!doctorOptionList}">Select a Doctor:</apex:selectOptions>
                 <apex:actionSupport reRender="selected_doctor,selected_doctorAppointments" event="onchange"/>
             </apex:selectList>
         </apex:form>
+
+        <apex:outputPanel id="selected_doctor" >
+
+            <apex:outputText value="{0, time, short}" label=" Working Hours Start:">
+                <apex:param value="{! workingHoursStart }"/>
+            </apex:outputText>
+            <apex:outputText value="{0, time, short}" label=" Working Hours End  :">
+                <apex:param value="{! workingHoursEnd }"/>
+            </apex:outputText>
+       </apex:outputPanel>
+
         <apex:form>
             <apex:selectList size="1" value="{!selectedPatientId}" multiselect="false">
                 <apex:selectOptions value="{!patientOptionList}">Select a Patient:</apex:selectOptions>
                 <apex:actionSupport reRender="selected_doctorAppointments" event="onchange"/>
             </apex:selectList>
         </apex:form>
-        <apex:pageBlockSection id="selected_doctor">
-            <apex:outputText value="{0, time, short}" label=" Working Hours Start:">
-                <apex:param value="{! workingHoursStart }"/>
-            </apex:outputText>
 
-            <apex:outputText value="{0, time, short}" label=" Working Hours End  :">
-                <apex:param value="{! workingHoursEnd }"/>
 
-            </apex:outputText>
+        <apex:form>
+            <apex:inputField value="{!newAppointment.Appointment_Date__c}"/>
+            <apex:inputField value="{!newAppointment.Duration_in_minutes__c}"/>
+            <apex:commandButton action="{!saveAppointment}" value="Add New Appointment"/>
+            <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>
+        </apex:form>
 
-        </apex:pageBlockSection>
-
-        <br/>
 
 
         <button onclick="document.location='https://vrpconsulting-f1-dev-ed.lightning.force.com/lightning/o/Doctors__c/new'">
@@ -44,37 +52,6 @@
             Add new Patient
         </button>
         <apex:form>
-            <!--            <apex:pageBlockSection columns="1">-->
-            <!--                <apex:inputField value="{!newAppointment.Appointment_Date__c}"/>-->
-            <!--                <apex:inputField value="{!newAppointment.Duration_in_minutes__c}"/>-->
-            <!--                <apex:commandButton action="{!saveAppointment}" value="Add New Appointment"/>-->
-            <!--                <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>-->
-            <!--            </apex:pageBlockSection>-->
-            <!--        </apex:form>-->
-            <!--        <apex:form id="selected_doctorAppointments">-->
-            <!--            <apex:pageBlockTable value="{!appointments}" var="appointment">-->
-            <!--                <apex:column headerValue="Action">-->
-            <!--                    <apex:outputLink value="{! URLFOR($Action.Appointment__c.View, appointment.Id) }">-->
-            <!--                        View-->
-            <!--                    </apex:outputLink>-->
-            <!--                    &nbsp;-->
-            <!--                </apex:column>-->
-            <!--                <apex:column value="{!appointment.Doctor__c}"/>-->
-            <!--                <apex:column value="{!appointment.Patient__c}"/>-->
-            <!--                <apex:column value="{!appointment.Appointment_Date__c}"/>-->
-            <!--                <apex:column headerValue="Duration" value="{!FLOOR(appointment.Duration_in_minutes__c)} minutes"/>-->
-            <!--            </apex:pageBlockTable>-->
-
-
-            <!--            <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Previous"-->
-            <!--                                action="{!setCon.previous}" title="Previous Page"/>-->
-
-            <!--            <apex:outputText>{!setCon.pageNumber}/{!CEILING(countOfRecords/sizeOfPage)}</apex:outputText>-->
-
-
-            <!--            <apex:commandButton status="fetchStatus" reRender="selected_doctorAppointments" value="Next"-->
-            <!--                                action="{!setCon.next}" title="Next Page"/>-->
-
 
             <apex:outputPanel layout="block" id="selected_doctorAppointments">
 

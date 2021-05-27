@@ -149,7 +149,13 @@ public class AppointmentsController {
         }
         newAppointment.Doctor__c = selectedDoctor.Id;
         newAppointment.Patient__c = selectedPatient.Id;
-        insert newAppointment;
+        try{
+            insert newAppointment;
+        }
+        catch (Exception e){
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
+        }
+
         newAppointment = new Appointment__c();
         appointmentList = [SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c];
         setCon= new ApexPages.StandardSetController(getAppointments());
