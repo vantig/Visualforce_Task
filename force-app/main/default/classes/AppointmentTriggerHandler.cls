@@ -58,4 +58,3 @@ public with sharing class AppointmentTriggerHandler implements ITrigger {
 
     }
 }
-

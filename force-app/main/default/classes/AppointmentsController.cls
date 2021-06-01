@@ -8,7 +8,7 @@ public class AppointmentsController {
     public Appointment__c newAppointment {
         get {
             if (newAppointment == null) {
-                newAppointment= new Appointment__c();
+                newAppointment = new Appointment__c();
                 return newAppointment;
             }
             return newAppointment;
@@ -70,7 +70,6 @@ public class AppointmentsController {
     }
 
 
-
     public List<SelectOption> getDoctorOptionList() {
         List<SelectOption>doctorOptionList = new List<SelectOption>();
         doctorOptionList.add(new SelectOption('all', 'All Doctors'));
@@ -96,7 +95,7 @@ public class AppointmentsController {
     }
 
 
-     List<Appointment__c> getAppointments() {
+    List<Appointment__c> getAppointments() {
         List<Appointment__c> appointments = new List<Appointment__c>();
         if (selectedPatient == null && selectedDoctor == null) {
             return appointmentList;
@@ -110,11 +109,14 @@ public class AppointmentsController {
         return appointments;
 
     }
-    public List<Appointment__c> appointments { get{
+    public List<Appointment__c> appointments {
+        get {
 
-        return (List<Appointment__c>)setCon.getRecords();
+            return (List<Appointment__c>) setCon.getRecords();
 
-    } set; }
+        }
+        set;
+    }
 
 
     public Integer sizeOfPage { get {return 5;} set; }
@@ -136,6 +138,15 @@ public class AppointmentsController {
         }
         set;
     }
+    void reloadController() {
+        setCon.save();
+        setCon = new ApexPages.StandardSetController(getAppointments());
+        countOfRecords = setCon.getResultSize();
+        setCon.setPageSize(sizeOfPage);
+        selectedDoctorOld = selectedDoctor;
+        selectedPatientOld = selectedPatient;
+
+    }
 
     public void saveAppointment() {
 
@@ -149,17 +160,121 @@ public class AppointmentsController {
         }
         newAppointment.Doctor__c = selectedDoctor.Id;
         newAppointment.Patient__c = selectedPatient.Id;
-        try{
+        try {
             insert newAppointment;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
+            return;
+        }
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Appointment: ' + newAppointment.Id + ' inserted successfully'));
+        appointmentList.add(newAppointment);
+        newAppointment = new Appointment__c();
+        setCon = null;
+    }
+    //new doctor popup
+
+    public Boolean displayDoctorPopup { get; set; }
+
+    public Doctors__c newDoctor {
+        get {
+            if (newDoctor == null) {
+                newDoctor = new Doctors__c();
+                return newDoctor;
+            }
+            return newDoctor;
+        }
+        set;
+    }
+    public void closeDoctorPopup() {
+        displayDoctorPopup = false;
+    }
+    public void showDoctorPopup() {
+        displayDoctorPopup = true;
+    }
+    public void saveNewDoctor() {
+
+
+        try {
+            insert newDoctor;
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
+            return;
+        }
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Doctor: ' + newDoctor.Id + ' inserted successfully'));
+        doctorList.add(newDoctor);
+        newDoctor = new Doctors__c();
+        closeDoctorPopup();
+    }
+
+
+    //new doctor Patient
+
+
+    public Patient__c newPatient {
+        get {
+            if (newPatient == null) {
+                newPatient = new Patient__c();
+                return newPatient;
+            }
+            return newPatient;
+        }
+        set;
+    }
+    public Boolean displayPatientPopup { get; set; }
+    public void closePatientPopup() {
+        displayPatientPopup = false;
+    }
+    public void showPatientPopup() {
+        displayPatientPopup = true;
+    }
+    public void saveNewPatient() {
+
+
+        try {
+            insert newPatient;
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
+            return;
+        }
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Patient: ' + newPatient.Id + ' inserted successfully'));
+        patientList.add(newPatient);
+        newPatient = new Patient__c();
+        closePatientPopup();
+    }
+    public Id appointmentForDelete { get; set; }
+    public Boolean displayDeleteDecisionPopup { get; set; }
+    public void closeDeleteDecisionPopup() {
+        displayDeleteDecisionPopup = false;
+    }
+    public void showDeleteDecisionPopup() {
+        displayDeleteDecisionPopup = true;
+    }
+    public void deleteAppointment() {
+        closeDeleteDecisionPopup();
+        try {
+            Database.delete(appointmentForDelete);
+        } catch (Exception e) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, e.getMessage()));
+            return;
         }
 
-        newAppointment = new Appointment__c();
-        appointmentList = [SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c];
-        setCon= new ApexPages.StandardSetController(getAppointments());
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Appointment ' + appointmentForDelete + ' successfully deleted'));
+        for (Integer i = 0; i < appointmentList.size(); i++) {
+            if (appointmentList[i].Id == appointmentForDelete) {
+                appointmentList.remove(i);
+                reloadController();
+                return ;
+            }
+        }
 
     }
-}
+//    //view appointment
+//    Boolean displayAppointmentViewPopup { get; set; }
+//    public void closeAppointmentViewPopup() {
+//        displayAppointmentViewPopup = false;
+//    }
+//    public void showAppointmentViewPopup() {
+//        displayAppointmentViewPopup = true;
+//    }
 
+}

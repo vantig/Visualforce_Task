@@ -100,6 +100,6 @@ private class AppointmentsControllerTest {
         controller.selectedPatientId = patient.Id;
         controller.saveAppointment();
 
-        System.assertEquals(1, controller.setCon.getRecords().size());
+        System.assertEquals(1, [SELECT Id FROM Appointment__c].size());
     }
 }

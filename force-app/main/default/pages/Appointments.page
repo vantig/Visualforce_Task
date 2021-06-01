@@ -1,61 +1,206 @@
-<apex:page lightningStylesheets="true" language="en-US" controller="AppointmentsController" docType="html-5.0">
-
+<apex:page language="en-US" lightningStylesheets="true" controller="AppointmentsController" docType="html-5.0">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title> Appointments </title>
-        <apex:slds/>
+        <apex:stylesheet value="{!URLFOR($Resource.style_resources, 'appointments.css')}"/>
     </head>
     <body>
-    <apex:messages/>
-    <apex:pageBlock title="Appointments Table">
+
+    <div class="PageBlock" id="myScope">
+        <div id="message">
+            <apex:pageMessages/>
+        </div>
+
+        <h1>Appointment Table</h1>
+        <div class="PageBlockFlex">
 
 
-        <apex:form>
-            <apex:selectList size="1" value="{!selectedDoctorId}" multiselect="false">
-                <apex:selectOptions value="{!doctorOptionList}">Select a Doctor:</apex:selectOptions>
-                <apex:actionSupport reRender="selected_doctor,selected_doctorAppointments" event="onchange"/>
-            </apex:selectList>
-        </apex:form>
-
-        <apex:outputPanel id="selected_doctor" >
-
-            <apex:outputText value="{0, time, short}" label=" Working Hours Start:">
-                <apex:param value="{! workingHoursStart }"/>
-            </apex:outputText>
-            <apex:outputText value="{0, time, short}" label=" Working Hours End  :">
-                <apex:param value="{! workingHoursEnd }"/>
-            </apex:outputText>
-       </apex:outputPanel>
-
-        <apex:form>
-            <apex:selectList size="1" value="{!selectedPatientId}" multiselect="false">
-                <apex:selectOptions value="{!patientOptionList}">Select a Patient:</apex:selectOptions>
-                <apex:actionSupport reRender="selected_doctorAppointments" event="onchange"/>
-            </apex:selectList>
-        </apex:form>
+            <div class="PageBlock_inner">
+                <h2>Select Options</h2>
+                <apex:form>
+                    <apex:selectList size="1" value="{!selectedDoctorId}" multiselect="false">
+                        <apex:selectOptions value="{!doctorOptionList}">Select a Doctor:</apex:selectOptions>
+                        <apex:actionSupport
+                                reRender="selected_doctorStart,selected_doctorEnd,selected_doctorAppointments"
+                                event="onchange"/>
+                    </apex:selectList>
+                </apex:form>
 
 
-        <apex:form>
-            <apex:inputField value="{!newAppointment.Appointment_Date__c}"/>
-            <apex:inputField value="{!newAppointment.Duration_in_minutes__c}"/>
-            <apex:commandButton action="{!saveAppointment}" value="Add New Appointment"/>
-            <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>
-        </apex:form>
+                <div>
+                    <apex:outputPanel id="selected_doctorStart">
+                        <apex:outputText value="{0, time, short}" label=" Working Hours Start:">
+                            working Hours Start:&nbsp;
+                            <apex:param value="{! workingHoursStart }"/>
+                        </apex:outputText>
+                    </apex:outputPanel>
+                </div>
+                <div>
+                    <apex:outputPanel id="selected_doctorEnd">
+                        <apex:outputText value="{0, time , short}" label=" Working Hours End  :">
+                            working Hours End:&nbsp;
+                            <apex:param value="{! workingHoursEnd }"/>
+                        </apex:outputText>
+                    </apex:outputPanel>
+                </div>
+                <apex:form>
+                    <apex:selectList size="1" value="{!selectedPatientId}" multiselect="false">
+                        <apex:selectOptions value="{!patientOptionList}">Select a Patient:</apex:selectOptions>
+                        <apex:actionSupport reRender="selected_doctorAppointments" event="onchange"/>
+                    </apex:selectList>
+                </apex:form>
+                <apex:form>
+                       <span id="btn">
+                           <apex:commandButton value="Add new doctor" styleClass="outline white-blue"
+                                               action="{!showDoctorPopup}" reRender="newDoctorPopup"/>
+                       </span>
+                </apex:form>
+                <apex:outputPanel id="newDoctorPopup">
+                    <apex:outputPanel styleClass="fixed-overlay" layout="block" rendered="{!displayDoctorPopup}">
+                        <div id="modal">
+                            <div class="modal_container">
+                                <apex:form>
+                                           <span id="btn">
+                                          <apex:commandButton value="x" styleClass="close-btn"
+                                                              action="{!closeDoctorPopup}" rerender="newDoctorPopup"
+                                          />
+                                    </span>
+                                </apex:form>
+
+                                <apex:form>
+                                    <div class="createForm">
+
+                                        <h2>Create New Doctor</h2>
+
+                                        Name:
+                                        <apex:inputField required="true" styleClass="PageBlock_Appointment_input"
+                                                         value="{!newDoctor.Name}"/>
+                                        Working Hours Start:
+                                        <apex:inputField label="Working Hours Start"
+                                                         styleClass="PageBlock_Appointment_input"
+                                                         value="{!newDoctor.Working_Hours_Start__c}"/>
+                                        Working Hours End:
+                                        <apex:inputField label="Working Hours End"
+                                                         styleClass="PageBlock_Appointment_input"
+                                                         value="{!newDoctor.Working_Hours_End__c}"/>
+                                        <span id="btn">
+                                           <apex:commandButton value="Add new doctor"
+                                                               styleClass="outline white-green"
+                                                               action="{!saveNewDoctor}"/>
+                                            </span>
+                                        <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>
+
+                                    </div>
+                                </apex:form>
+
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+
+                <apex:form>
+                       <span id="btn">
+                           <apex:commandButton value="Add new Patient" styleClass="outline white-blue"
+                                               action="{!showPatientPopup}" reRender="newPatientPopup"/>
+                       </span>
+                </apex:form>
+                <apex:outputPanel id="newPatientPopup">
+                    <apex:outputPanel styleClass="fixed-overlay" layout="block" rendered="{!displayPatientPopup}">
+                        <div id="modal">
+                            <div class="modal_container">
+                                <apex:form>
+                                           <span id="btn">
+                                          <apex:commandButton value="x" styleClass="close-btn"
+                                                              action="{!closePatientPopup}" rerender="newPatientPopup"
+                                          />
+                                    </span>
+                                </apex:form>
+
+                                <apex:form onSubmit="close();">
+                                    <div class="createForm">
+
+                                        <h2>Create New patient</h2>
+
+                                        Name:
+                                        <apex:inputField required="true" styleClass="PageBlock_Appointment_input"
+                                                         value="{!newPatient.Name}"/>
+                                        <span id="btn">
+                                           <apex:commandButton value="Add new patient"
+                                                               styleClass="outline white-green"
+                                                               action="{!saveNewPatient}"
+
+                                           />
+                                            </span>
+                                        <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"
+                                                            action="{!closePatientPopup}"/>
+                                    </div>
+                                </apex:form>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <!--                <button id="button" class="outline white-blue"-->
+                <!--                        onclick="document.location='https://vrpconsulting-f1-dev-ed.lightning.force.com/lightning/o/Patient__c/new'">-->
+                <!--                    Add new Patient-->
+                <!--                </button>-->
+            </div>
+
+            <div class="createForm">
+
+                <h2>Create New Appointment</h2>
+                <apex:form>
+                    Date Of Appointment:
+                    <apex:inputField styleClass="PageBlock_Appointment_input"
+                                     value="{!newAppointment.Appointment_Date__c}"/>
+                    Duration:
+                    <apex:inputField styleClass="PageBlock_Appointment_input"
+                                     value="{!newAppointment.Duration_in_minutes__c}"/>
+                    <span id="btn">
+                      <apex:commandButton value="Add new appointment"
+                                          styleClass="outline white-green"
+                                          action="{!saveAppointment}"
+                      />
+                   </span>
+                    <apex:actionSupport reRender="selected_doctorAppointments" event="onclick"/>
+                </apex:form>
+            </div>
+
+        </div>
 
 
+        <apex:outputPanel id="DeleteDecisionPopup">
+            <apex:outputPanel styleClass="fixed-overlay" layout="block" rendered="{!displayDeleteDecisionPopup}">
+                <div id="modal">
+                    <div class="modal_container decision">
+                        <apex:form>
+                            <div>{!appointmentForDelete}</div>
+                            <div class="decision_inner">
+                                 <span id="btn">
+                                           <apex:commandButton value="YES"
+                                                               styleClass="outline white-green"
+                                                               action="{!deleteAppointment}"
+                                           />
+                                 </span>
 
-        <button onclick="document.location='https://vrpconsulting-f1-dev-ed.lightning.force.com/lightning/o/Doctors__c/new'">
-            Add new doctor
-        </button>
-        <button onclick="document.location='https://vrpconsulting-f1-dev-ed.lightning.force.com/lightning/o/Patient__c/new'">
-            Add new Patient
-        </button>
+                                <span id="btn">
+                                           <apex:commandButton value="NO"
+                                                               styleClass="outline white-red"
+                                                               action="{!closeDeleteDecisionPopup}"
+                                           />
+                                </span>
+                            </div>
+                            <apex:actionSupport reRender="selected_doctorAppointments,DeleteDecisionPopup" event="onclick"/>
+                        </apex:form>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
         <apex:form>
 
             <apex:outputPanel layout="block" id="selected_doctorAppointments">
 
-                <table id="AppointmentsTable">
+                <table class="container" id="AppointmentsTable">
                     <tr>
                         <th>Action</th>
                         <th>Doctor</th>
@@ -65,7 +210,7 @@
                     </tr>
                     <apex:repeat value="{!appointments}" var="appointment">
                         <tr>
-                            <td>
+                            <td class="action">
                                 <apex:outputLink value="{! URLFOR($Action.Appointment__c.View, appointment.Id) }">
                                     View
                                 </apex:outputLink>
@@ -74,15 +219,32 @@
                                     Edit
                                 </apex:outputLink>
                                 |
-                                <apex:outputLink value="{! URLFOR($Action.Appointment__c.Delete, appointment.Id) }">
-                                    Delete
-                                </apex:outputLink>
+                                <!--                                <apex:outputLink  value="{! URLFOR('/flow/DeleteAppointmentDeci?RecordID='+appointment.Id) }">-->
+                                <!--                                    Delete-->
+                                <!--                                </apex:outputLink>-->
+
+                                <span id="btn">
+                                       <apex:commandButton value="Delete"
+                                                           action="{!showDeleteDecisionPopup}"
+                                                           reRender="DeleteDecisionPopup">
+                                           <apex:param name="idForDelete" value="{!appointment.Id}"
+                                                       assignTo="{!appointmentForDelete}"/>
+                                       </apex:commandButton>
+                                    </span>
 
                             </td>
                             <td>
+                                <apex:outputLink value="{! URLFOR('/apex/DoctorView?id='+ appointment.Doctor__c) }">
+                                    View
+                                </apex:outputLink>
+                                <span> | </span>
                                 <apex:outputField value="{!appointment.Doctor__c}"/>
                             </td>
                             <td>
+                                <apex:outputLink value="{! URLFOR('/apex/PatientView?id='+ appointment.Patient__c) }">
+                                    View
+                                </apex:outputLink>
+                                <span> | </span>
                                 <apex:outputField value="{!appointment.Patient__c}"/>
                             </td>
                             <td>
@@ -94,28 +256,52 @@
                         </tr>
                     </apex:repeat>
                 </table>
-                <apex:commandButton action="{!setCon.first}" status="PaginationStatus"
-                                    reRender="selected_doctorAppointments" value="|<"
-                                    disabled="{!!setCon.hasPrevious}" title="First Page"/>
-                <apex:commandButton action="{!setCon.previous}" status="PaginationStatus"
-                                    reRender="selected_doctorAppointments" value="<"
-                                    disabled="{!!setCon.hasPrevious}" title="Previous Page"/>
-                <apex:outputText> {!(setCon.pageNumber * sizeOfPage)+1-sizeOfPage}
-                    -{!IF((setCon.pageNumber * sizeOfPage)>countOfRecords, countOfRecords,(setCon.pageNumber * sizeOfPage))}
-                    of {!countOfRecords}</apex:outputText>
-                <apex:commandButton action="{!setCon.next}" status="PaginationStatus"
-                                    reRender="selected_doctorAppointments" value=">" disabled="{!!setCon.hasNext}"
-                                    title="Next Page"/>
-                <apex:commandButton action="{!setCon.last}" status="PaginationStatus"
-                                    reRender="selected_doctorAppointments" value=">|" disabled="{!!setCon.hasNext}"
-                                    title="Last Page"/>
+                <div class="controller">
 
-                <apex:actionStatus id="PaginationStatus">
-                    <apex:facet name="start"><img src="/img/loading.gif" alt=""/></apex:facet>
-                </apex:actionStatus>
+                    <span id="btn">
+                         <apex:commandButton action="{!setCon.first}" status="PaginationStatus"
+                                             reRender="selected_doctorAppointments" value="|<"
+                                             disabled="{!!setCon.hasPrevious}" title="First Page"
+                                             styleClass="outline purple-white"/>
+                    </span>
+
+                    <span id="btn">
+
+                    <apex:commandButton action="{!setCon.previous}" status="PaginationStatus"
+                                        reRender="selected_doctorAppointments" value="<"
+                                        disabled="{!!setCon.hasPrevious}" title="Previous Page"
+                                        styleClass="outline purple-white"/>
+                    </span>
+
+                    <apex:outputText> {!IF((countOfRecords)>0,(setCon.pageNumber * sizeOfPage)+1-sizeOfPage,0)}
+                        -{!IF((setCon.pageNumber * sizeOfPage)>countOfRecords, countOfRecords,(setCon.pageNumber * sizeOfPage))}
+                        of {!countOfRecords}</apex:outputText>
+                    <span id="btn">
+                       <apex:commandButton action="{!setCon.next}" status="PaginationStatus"
+                                           reRender="selected_doctorAppointments" value=">"
+                                           disabled="{!!setCon.hasNext}"
+                                           title="Next Page"
+                                           styleClass="outline purple-white"/>
+                        </span>
+                    <span id="btn">
+                         <apex:commandButton action="{!setCon.last}" status="PaginationStatus"
+                                             reRender="selected_doctorAppointments" value=">|"
+                                             disabled="{!!setCon.hasNext}"
+                                             title="Last Page"
+                                             styleClass="outline purple-white"/>
+                    </span>
+
+                    <apex:actionStatus id="PaginationStatus">
+                        <apex:facet name="start">
+                            <img src="/img/loading.gif" alt=""/>
+                        </apex:facet>
+                    </apex:actionStatus>
+
+                </div>
             </apex:outputPanel>
         </apex:form>
-
-    </apex:pageBlock>
+        <apex:includeScript value="{!URLFOR($Resource.js_resources,'main.js')}"/>
+    </div>
     </body>
+
 </apex:page>
