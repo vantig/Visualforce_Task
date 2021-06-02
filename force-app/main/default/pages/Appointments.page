@@ -173,24 +173,27 @@
             <apex:outputPanel styleClass="fixed-overlay" layout="block" rendered="{!displayDeleteDecisionPopup}">
                 <div id="modal">
                     <div class="modal_container decision">
+                        <h2>Are you sure?</h2>
                         <apex:form>
-                            <div>{!appointmentForDelete}</div>
                             <div class="decision_inner">
+
                                  <span id="btn">
-                                           <apex:commandButton value="YES"
+                                           <apex:commandButton value="YES   "
+                                                               style="padding: 10px 53px"
                                                                styleClass="outline white-green"
                                                                action="{!deleteAppointment}"
                                            />
                                  </span>
 
                                 <span id="btn">
-                                           <apex:commandButton value="NO"
+                                           <apex:commandButton value="Cancel"
                                                                styleClass="outline white-red"
                                                                action="{!closeDeleteDecisionPopup}"
                                            />
                                 </span>
                             </div>
-                            <apex:actionSupport reRender="selected_doctorAppointments,DeleteDecisionPopup" event="onclick"/>
+                            <apex:actionSupport reRender="selected_doctorAppointments,DeleteDecisionPopup"
+                                                event="onclick"/>
                         </apex:form>
                     </div>
                 </div>
@@ -211,26 +214,32 @@
                     <apex:repeat value="{!appointments}" var="appointment">
                         <tr>
                             <td class="action">
-                                <apex:outputLink value="{! URLFOR($Action.Appointment__c.View, appointment.Id) }">
+                               <span id="btn">
+                                   <apex:outputLink styleClass=" action_btn "
+                                                    value="{! URLFOR('/apex/AppointmentView?id='+ appointment.Id) }">
                                     View
-                                </apex:outputLink>
+                                   </apex:outputLink>
+                                </span>
                                 |
-                                <apex:outputLink value="{! URLFOR($Action.Appointment__c.Edit, appointment.Id) }">
-                                    Edit
-                                </apex:outputLink>
-                                |
-                                <!--                                <apex:outputLink  value="{! URLFOR('/flow/DeleteAppointmentDeci?RecordID='+appointment.Id) }">-->
-                                <!--                                    Delete-->
-                                <!--                                </apex:outputLink>-->
-
                                 <span id="btn">
-                                       <apex:commandButton value="Delete"
-                                                           action="{!showDeleteDecisionPopup}"
-                                                           reRender="DeleteDecisionPopup">
-                                           <apex:param name="idForDelete" value="{!appointment.Id}"
-                                                       assignTo="{!appointmentForDelete}"/>
-                                       </apex:commandButton>
-                                    </span>
+
+                                           <apex:outputLink styleClass=" action_btn "
+                                                            value="{! URLFOR($Action.Appointment__c.Edit, appointment.Id) }">
+                                <apex:actionSupport reRender="selected_doctorAppointments"/>
+                                               Edit
+                                    </apex:outputLink>
+
+                                 </span>
+                                |
+                                <span id="btn">
+                                    <apex:commandButton value="Delete"
+                                                        action="{!showDeleteDecisionPopup}"
+                                                        styleClass=" action_btn "
+                                                        reRender="DeleteDecisionPopup">
+                                        <apex:param name="idForDelete" value="{!appointment.Id}"
+                                                    assignTo="{!appointmentForDelete}"/>
+                                    </apex:commandButton>
+                                </span>
 
                             </td>
                             <td>
@@ -300,8 +309,12 @@
                 </div>
             </apex:outputPanel>
         </apex:form>
-        <apex:includeScript value="{!URLFOR($Resource.js_resources,'main.js')}"/>
+
     </div>
     </body>
-
+    <apex:includeScript value="{!URLFOR($Resource.js_resources,'main.js')}"/>
+    <script>
+    let mes=document.querySelector("#message");
+    mes.addEventListener('change',toggleMessage(mes));
+    </script>
 </apex:page>

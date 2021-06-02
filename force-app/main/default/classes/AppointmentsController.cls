@@ -167,9 +167,10 @@ public class AppointmentsController {
             return;
         }
         ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'Appointment: ' + newAppointment.Id + ' inserted successfully'));
-        appointmentList.add(newAppointment);
         newAppointment = new Appointment__c();
-        setCon = null;
+        appointmentList = [SELECT Id,Name,Doctor__c,Appointment_Date__c,Duration_in_minutes__c,Patient__c FROM Appointment__c];
+        reloadController();
+
     }
     //new doctor popup
 
